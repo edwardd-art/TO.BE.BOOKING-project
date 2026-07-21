@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация — TO.BE.BAR{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card-dark">
+                <h2 class="gold-title text-center" style="font-size: 28px;">Регистрация</h2>
+                <div class="gold-line"></div>
+
+                <form method="post" action="{% url 'register' %}">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            Исправьте ошибки в форме
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">ИМЯ ПОЛЬЗОВАТЕЛЯ</label>
+                        <input type="text" name="username" class="form-control dark-input" placeholder="Придумайте логин" required>
+                        <small style="color: #666;">Только буквы, цифры и @/./+/-/_</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">EMAIL</label>
+                        <input type="email" name="email" class="form-control dark-input" placeholder="Ваш email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">ПАРОЛЬ</label>
+                        <input type="password" name="password1" class="form-control dark-input" placeholder="Придумайте пароль" required>
+                        <small style="color: #666;">Пароль должен содержать не менее 8 символов</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">ПОДТВЕРЖДЕНИЕ ПАРОЛЯ</label>
+                        <input type="password" name="password2" class="form-control dark-input" placeholder="Повторите пароль" required>
+                    </div>
+                    <button type="submit" class="btn btn-gold w-100">
+                        <i class="bi bi-person-plus"></i> Зарегистрироваться
+                    </button>
+                </form>
+
+                <p class="text-center mt-3" style="color: #b0b0b0;">
+                    Уже есть аккаунт? <a href="{% url 'login' %}" style="color: #d4a843; font-weight: 600;">Войти</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

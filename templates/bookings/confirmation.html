@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Бронирование подтверждено — TO.BE.BAR{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-dark text-center" style="padding: 50px;">
+                <i class="bi bi-check-circle" style="font-size: 80px; color: #28a745;"></i>
+                <h2 class="gold-title mt-4" style="font-size: 32px;">Бронирование подтверждено!</h2>
+                <div class="gold-line"></div>
+
+                <div class="mt-4" style="text-align: left; max-width: 400px; margin: 0 auto;">
+                    <p><strong style="color: #d4a843;">Столик:</strong> #{{ booking.table.number }}</p>
+                    <p><strong style="color: #d4a843;">Дата:</strong> {{ booking.date }}</p>
+                    <p><strong style="color: #d4a843;">Время:</strong> {{ booking.time_start }}</p>
+                    <p><strong style="color: #d4a843;">Гостей:</strong> {{ booking.guests_count }}</p>
+                    <p><strong style="color: #d4a843;">Имя:</strong> {{ booking.name }}</p>
+                    <p><strong style="color: #d4a843;">Телефон:</strong> {{ booking.phone }}</p>
+                    {% if booking.comment %}
+                        <p><strong style="color: #d4a843;">Комментарий:</strong> {{ booking.comment }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="mt-4 d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'profile' %}" class="btn btn-gold">
+                        <i class="bi bi-person"></i> Личный кабинет
+                    </a>
+                    <a href="/" class="btn btn-outline-gold">
+                        <i class="bi bi-house"></i> На главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

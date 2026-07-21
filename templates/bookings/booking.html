@@ -1,0 +1,564 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Бронирование столика — TO.BE.BAR{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hall-map-wrapper {
+        background: #0a0a0a;
+        border-radius: 15px;
+        padding: 20px;
+        border: 1px solid #2a2a2a;
+        position: relative;
+    }
+
+    .hall-map {
+        position: relative;
+        width: 100%;
+        min-height: 550px;
+        background: #1a1a1a;
+        border-radius: 10px;
+        border: 2px solid #2a2a2a;
+        overflow: hidden;
+    }
+
+    .hall-walls {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        border: 2px solid #333;
+        border-radius: 10px;
+    }
+
+    .hall-stage {
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(212, 168, 67, 0.1);
+        border: 1px solid #d4a843;
+        border-radius: 8px;
+        padding: 8px 30px;
+        color: #d4a843;
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    .table-item {
+        position: absolute;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: 2px solid #333;
+        background: #2a2a2a;
+        padding: 4px;
+        z-index: 10;
+        color: #ffffff;
+        font-size: 12px;
+        user-select: none;
+    }
+
+    .table-item:hover {
+        transform: scale(1.1);
+        z-index: 20;
+        border-color: #d4a843;
+        box-shadow: 0 0 25px rgba(212, 168, 67, 0.3);
+    }
+
+    .table-item.small {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(255, 215, 0, 0.1);
+        border-color: #ffd700;
+    }
+
+    .table-item.medium {
+        width: 90px;
+        height: 70px;
+        border-radius: 10px;
+        background: rgba(255, 165, 0, 0.1);
+        border-color: #ffa500;
+    }
+
+    .table-item.large {
+        width: 110px;
+        height: 80px;
+        border-radius: 10px;
+        background: rgba(255, 0, 0, 0.1);
+        border-color: #ff4444;
+    }
+
+    .table-item .number {
+        font-weight: bold;
+        font-size: 18px;
+        color: #ffffff;
+        line-height: 1.2;
+    }
+
+    .table-item .seats {
+        font-size: 11px;
+        color: #b0b0b0;
+    }
+
+    .table-item .status-badge {
+        font-size: 9px;
+        padding: 2px 10px;
+        border-radius: 10px;
+        margin-top: 3px;
+    }
+
+    .table-item.occupied {
+        opacity: 0.35;
+        cursor: not-allowed;
+        border-color: #555 !important;
+    }
+
+    .table-item.occupied:hover {
+        transform: none !important;
+        border-color: #555 !important;
+        box-shadow: none !important;
+    }
+
+    .table-item.selected {
+        border-color: #d4a843 !important;
+        box-shadow: 0 0 30px rgba(212, 168, 67, 0.6);
+        transform: scale(1.1);
+        z-index: 30;
+    }
+
+    .table-item .badge-free {
+        background: #28a745;
+        color: #fff;
+    }
+
+    .table-item .badge-occupied {
+        background: #dc3545;
+        color: #fff;
+    }
+
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px 30px;
+        padding: 15px;
+        margin-bottom: 20px;
+        background: #1a1a1a;
+        border-radius: 10px;
+        border: 1px solid #2a2a2a;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #b0b0b0;
+        font-size: 13px;
+    }
+
+    .legend-color {
+        width: 25px;
+        height: 18px;
+        border-radius: 4px;
+        border: 1px solid #444;
+    }
+
+    .legend-color.free {
+        background: #28a745;
+    }
+    .legend-color.occupied {
+        background: #dc3545;
+    }
+    .legend-color.selected {
+        background: #d4a843;
+    }
+    .legend-color.small {
+        background: #ffd700;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+    }
+    .legend-color.medium {
+        background: #ffa500;
+        width: 30px;
+        height: 18px;
+    }
+    .legend-color.large {
+        background: #ff4444;
+        width: 40px;
+        height: 18px;
+    }
+
+    .time-slot {
+        padding: 8px 14px;
+        background: #2a2a2a;
+        border: 1px solid #333;
+        border-radius: 6px;
+        color: #b0b0b0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    .time-slot:hover {
+        border-color: #d4a843;
+        background: #333;
+        color: #fff;
+    }
+
+    .time-slot.selected {
+        border-color: #d4a843;
+        background: #d4a843;
+        color: #000;
+        font-weight: bold;
+    }
+
+    .availability-status {
+        margin-top: 5px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .hall-map {
+            min-height: 400px;
+        }
+        .table-item.small {
+            width: 50px;
+            height: 50px;
+        }
+        .table-item.medium {
+            width: 60px;
+            height: 50px;
+        }
+        .table-item.large {
+            width: 70px;
+            height: 55px;
+        }
+        .table-item .number {
+            font-size: 14px;
+        }
+        .table-item .seats {
+            font-size: 9px;
+        }
+        .table-item .status-badge {
+            font-size: 7px;
+            padding: 1px 6px;
+        }
+        .hall-stage {
+            font-size: 10px;
+            padding: 4px 15px;
+        }
+        .legend {
+            gap: 10px 15px;
+            padding: 10px;
+        }
+        .legend-item {
+            font-size: 11px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hall-map {
+            min-height: 320px;
+        }
+        .table-item.small {
+            width: 40px;
+            height: 40px;
+        }
+        .table-item.medium {
+            width: 50px;
+            height: 40px;
+        }
+        .table-item.large {
+            width: 60px;
+            height: 45px;
+        }
+        .table-item .number {
+            font-size: 12px;
+        }
+        .table-item .seats {
+            font-size: 8px;
+        }
+        .table-item .status-badge {
+            font-size: 6px;
+            padding: 1px 4px;
+        }
+        .hall-stage {
+            font-size: 8px;
+            padding: 3px 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container py-4">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1 class="gold-title" style="font-size: 42px;">Бронирование</h1>
+            <div class="gold-line"></div>
+            <p class="text-muted" style="letter-spacing: 1px; font-size: 15px;">
+                Кликните на столик на схеме, чтобы выбрать его
+            </p>
+        </div>
+    </div>
+
+    <div class="legend">
+        <span class="legend-item"><span class="legend-color free"></span> Свободен</span>
+        <span class="legend-item"><span class="legend-color occupied"></span> Занят</span>
+        <span class="legend-item"><span class="legend-color selected"></span> Выбран</span>
+        <span class="legend-item"><span class="legend-color small"></span> 2 места</span>
+        <span class="legend-item"><span class="legend-color medium"></span> 4 места</span>
+        <span class="legend-item"><span class="legend-color large"></span> 6+ мест</span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="hall-map-wrapper">
+                <div class="hall-map" id="hallMap">
+                    <div class="hall-walls"></div>
+                    <div class="hall-stage">🎵 Живая музыка</div>
+
+                    {% for table in tables %}
+                    <div class="table-item {{ table.table_type }} {% if not table.is_active %}occupied{% endif %}"
+                         id="table-{{ table.id }}"
+                         style="left: {{ table.pos_x }}%; top: {{ table.pos_y }}%;"
+                         onclick="selectTable({{ table.id }})"
+                         data-id="{{ table.id }}"
+                         data-number="{{ table.number }}"
+                         data-seats="{{ table.seats }}"
+                         data-active="{{ table.is_active|lower }}">
+                        <span class="number">#{{ table.number }}</span>
+                        <span class="seats">{{ table.seats }} мест</span>
+                        <span class="status-badge {% if table.is_active %}badge-free{% else %}badge-occupied{% endif %}">
+                            {% if table.is_active %}Свободен{% else %}Занят{% endif %}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-muted" style="padding: 40px;">Столики не добавлены</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card-dark">
+                <h4 class="gold-title" style="font-size: 20px;">Заполните данные</h4>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} mt-3">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" id="booking-form">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">ВЫБРАННЫЙ СТОЛИК</label>
+                        <div id="selected-table-display" style="background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #2a2a2a; color: #b0b0b0; min-height: 50px; display: flex; align-items: center;">
+                            <span style="color: #666;">Нажмите на столик на схеме</span>
+                        </div>
+                        <input type="hidden" name="table_id" id="selected-table-id" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">ДАТА</label>
+                        <input type="date" name="date" id="date" class="form-control dark-input"
+                               min="{% now 'Y-m-d' %}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">ВРЕМЯ</label>
+                        <input type="hidden" name="time" id="selected-time" required>
+                        <div id="time-slots" class="d-flex flex-wrap gap-2 mt-2">
+                        </div>
+                        <!-- Блок для отображения статуса доступности -->
+                        <div id="availability-status" class="availability-status mt-2"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">КОЛИЧЕСТВО ГОСТЕЙ</label>
+                        <select name="guests" id="guests" class="form-control dark-input" required>
+                            <option value="2">2 человека</option>
+                            <option value="3">3 человека</option>
+                            <option value="4" selected>4 человека</option>
+                            <option value="5">5 человек</option>
+                            <option value="6">6 человек</option>
+                            <option value="8">8+ человек</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">ВАШЕ ИМЯ</label>
+                        <input type="text" name="name" class="form-control dark-input" placeholder="Как к вам обращаться?" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">ТЕЛЕФОН</label>
+                        <input type="tel" name="phone" class="form-control dark-input" placeholder="+7 (999) 008-67-68" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="color: var(--gray); font-size: 13px; letter-spacing: 1px;">КОММЕНТАРИЙ</label>
+                        <textarea name="comment" class="form-control dark-input" rows="2" placeholder="Особые пожелания..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-gold w-100">
+                        <i class="bi bi-check-circle"></i> Забронировать
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const tablesData = {
+    {% for table in tables %}
+        {{ table.id }}: {
+            id: {{ table.id }},
+            number: {{ table.number }},
+            seats: {{ table.seats }},
+            is_active: {{ table.is_active|lower }}
+        },
+    {% endfor %}
+};
+
+function selectTable(tableId) {
+    const table = tablesData[tableId];
+    if (!table || !table.is_active) {
+        alert('Этот столик занят или недоступен');
+        return;
+    }
+
+    document.querySelectorAll('.table-item').forEach(el => {
+        el.classList.remove('selected');
+    });
+
+    const el = document.getElementById('table-' + tableId);
+    if (el) {
+        el.classList.add('selected');
+    }
+
+    const display = document.getElementById('selected-table-display');
+    display.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <span style="color: #d4a843; font-weight: bold; font-size: 18px;">
+                Столик #${table.number}
+            </span>
+            <span style="color: #b0b0b0; font-size: 14px;">
+                ${table.seats} мест
+            </span>
+        </div>
+    `;
+
+    document.getElementById('selected-table-id').value = tableId;
+
+    const guestsSelect = document.getElementById('guests');
+    for (let i = 0; i < guestsSelect.options.length; i++) {
+        if (parseInt(guestsSelect.options[i].value) >= table.seats) {
+            guestsSelect.selectedIndex = i;
+            break;
+        }
+    }
+
+    // Проверяем доступность после выбора столика
+    checkAvailability();
+}
+
+function updateTimeSlots() {
+    const dateInput = document.getElementById('date');
+    const container = document.getElementById('time-slots');
+    const selectedTimeInput = document.getElementById('selected-time');
+
+    if (!dateInput.value) {
+        container.innerHTML = '<span class="text-muted">Выберите дату</span>';
+        return;
+    }
+
+    const times = [
+        '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+        '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
+        '19:00', '19:30', '20:00', '20:30', '21:00', '21:30',
+        '22:00', '22:30', '23:00', '23:30',
+        '00:00', '00:30', '01:00'
+    ];
+
+    container.innerHTML = times.map(time => `
+        <div class="time-slot" onclick="selectTimeSlot(this, '${time}')" data-time="${time}">
+            ${time}
+        </div>
+    `).join('');
+
+    selectedTimeInput.value = '';
+}
+
+function selectTimeSlot(element, time) {
+    document.querySelectorAll('.time-slot').forEach(el => {
+        el.classList.remove('selected');
+    });
+    element.classList.add('selected');
+    document.getElementById('selected-time').value = time;
+
+    // Проверяем доступность после выбора времени
+    checkAvailability();
+}
+
+// ===== ФУНКЦИЯ ПРОВЕРКИ ДОСТУПНОСТИ =====
+function checkAvailability() {
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('selected-time').value;
+    const tableId = document.getElementById('selected-table-id').value;
+    const statusDisplay = document.getElementById('availability-status');
+
+    if (!date || !time || !tableId) {
+        if (statusDisplay) statusDisplay.innerHTML = '';
+        return;
+    }
+
+    fetch(`/booking/check-availability/?date=${date}&time=${time}&table_id=${tableId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (statusDisplay) {
+                if (data.available) {
+                    statusDisplay.innerHTML = '<span style="color: #28a745;">✅ Столик свободен</span>';
+                } else {
+                    statusDisplay.innerHTML = '<span style="color: #dc3545;">❌ Столик занят</span>';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+}
+// ===== КОНЕЦ ФУНКЦИИ =====
+
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = today;
+    updateTimeSlots();
+});
+
+document.getElementById('date').addEventListener('change', function() {
+    updateTimeSlots();
+    checkAvailability();
+});
+</script>
+{% endblock %}

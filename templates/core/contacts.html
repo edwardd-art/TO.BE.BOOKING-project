@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Контакты — TO.BE.BAR{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1 class="gold-title" style="font-size: 48px;">Контакты</h1>
+            <div class="gold-line"></div>
+            <p class="text-muted" style="letter-spacing: 1px;">Мы всегда рады видеть вас!</p>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-lg-4 mb-4">
+            <div class="card-dark text-center" style="padding: 30px;">
+                <i class="bi bi-geo-alt" style="font-size: 40px; color: #d4a843;"></i>
+                <h5 class="mt-3" style="font-size: 16px; letter-spacing: 1px; color: #ffffff;">АДРЕС</h5>
+                <p style="color: #ffffff; font-size: 16px; font-weight: 400;">
+                    Санкт-Петербург,<br>Петроградский район
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card-dark text-center" style="padding: 30px;">
+                <i class="bi bi-phone" style="font-size: 40px; color: #d4a843;"></i>
+                <h5 class="mt-3" style="font-size: 16px; letter-spacing: 1px; color: #ffffff;">ТЕЛЕФОН</h5>
+                <p style="color: #d4a843; font-size: 20px; font-weight: 700;">
+                    +7 (999) 008-67-68
+                </p>
+                <p style="color: #d4a843; font-size: 18px; font-weight: 600;">
+                    +7 (812) 940-10-56
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card-dark text-center" style="padding: 30px;">
+                <i class="bi bi-clock" style="font-size: 40px; color: #d4a843;"></i>
+                <h5 class="mt-3" style="font-size: 16px; letter-spacing: 1px; color: #ffffff;">ЧАСЫ РАБОТЫ</h5>
+                <p style="color: #ffffff; font-size: 16px; font-weight: 400;">
+                    <span style="color: #d4a843;">Пн-Чт:</span> 13:00–01:00
+                </p>
+                <p style="color: #ffffff; font-size: 16px; font-weight: 400;">
+                    <span style="color: #d4a843;">Пт:</span> 13:00–02:00
+                </p>
+                <p style="color: #ffffff; font-size: 16px; font-weight: 400;">
+                    <span style="color: #d4a843;">Сб:</span> 14:00–02:00
+                </p>
+                <p style="color: #ffffff; font-size: 16px; font-weight: 400;">
+                    <span style="color: #d4a843;">Вс:</span> 14:00–01:00
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card-dark text-center" style="padding: 30px;">
+                <h5 style="color: #ffffff; letter-spacing: 1px;">СВЯЖИТЕСЬ С НАМИ</h5>
+                <p style="color: #b0b0b0; font-size: 15px;">
+                    По всем вопросам бронирования и сотрудничества
+                </p>
+                <a href="mailto:info@tobespace.ru" style="color: #d4a843; font-size: 18px; font-weight: 600; text-decoration: none;">
+                    info@tobespace.ru
+                </a>
+                <div class="mt-3">
+                    <a href="#" style="color: #d4a843; font-size: 24px; margin: 0 10px;"><i class="bi bi-instagram"></i></a>
+                    <a href="#" style="color: #d4a843; font-size: 24px; margin: 0 10px;"><i class="bi bi-telegram"></i></a>
+                    <a href="#" style="color: #d4a843; font-size: 24px; margin: 0 10px;"><i class="bi bi-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

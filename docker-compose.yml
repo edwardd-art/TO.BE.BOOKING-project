@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: to_be_db
+    restart: always
+    environment:
+      POSTGRES_DB: to_be_db
+      POSTGRES_USER: to_be_user
+      POSTGRES_PASSWORD: to_be_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - to_be_network
+
+  web:
+    build: .
+    container_name: to_be_web
+    restart: always
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=to_be_db
+      - DB_USER=to_be_user
+      - DB_PASSWORD=to_be_password
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DJANGO_SETTINGS_MODULE=config.settings
+    networks:
+      - to_be_network
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+networks:
+  to_be_network:
+    driver: bridge

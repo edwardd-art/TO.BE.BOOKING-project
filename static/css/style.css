@@ -1,0 +1,48 @@
+/* static/css/style.css */
+
+/* Яркие контакты */
+.contact-phone {
+    color: #d4a843 !important;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.contact-phone:hover {
+    color: #ffd700 !important;
+}
+
+/* Имена команды */
+.team-name {
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.team-role {
+    color: #d4a843 !important;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* Контакты в футере */
+.footer-contact {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.footer-contact i {
+    color: #d4a843 !important;
+    margin-right: 10px;
+}
+
+/* Информация о ресторане */
+.restaurant-info {
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.restaurant-info strong {
+    color: #d4a843;
+}
