@@ -109,7 +109,14 @@
                     <li class="nav-item"><a class="nav-link" href="/contacts/">Контакты</a></li>
                     {% if user.is_authenticated %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'users:profile' %}">{{ user.username }}</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Выйти</a></li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link nav-link" style="display: inline; padding: 8px 20px; border: none; background: none; color: #ffffff; text-transform: uppercase; font-size: 14px; font-weight: 300; letter-spacing: 1px;">
+                        Выйти
+                                </button>
+                            </form>
+                        </li>
                     {% else %}
                         <li class="nav-item"><a class="btn btn-outline-gold" href="{% url 'login' %}">Войти</a></li>
                         <li class="nav-item"><a class="btn btn-gold" href="{% url 'register' %}" style="margin-left: 10px;">Регистрация</a></li>
