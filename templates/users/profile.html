@@ -47,7 +47,6 @@
                                 <td>{{ booking.time_start }}</td>
                                 <td>{{ booking.guests_count }}</td>
                                 <td>
-                                    <!-- ===== СТАТУСЫ С ИКОНКАМИ ===== -->
                                     {% if booking.status == 'pending' %}
                                         <span class="badge bg-warning text-dark">⏳ Ожидает</span>
                                     {% elif booking.status == 'confirmed' %}
@@ -57,15 +56,18 @@
                                     {% elif booking.status == 'cancelled' %}
                                         <span class="badge bg-danger">❌ Отменено</span>
                                     {% endif %}
-                                    <!-- ===== КОНЕЦ СТАТУСОВ ===== -->
                                 </td>
                                 <td>
                                     {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                                        <!-- КНОПКА "ИЗМЕНИТЬ" — ЭТО ССЫЛКА -->
+                                        <a href="{% url 'users:edit_booking' booking.id %}" class="btn btn-sm btn-outline-gold">Изменить</a>
+
+                                        <!-- КНОПКА "ОТМЕНИТЬ" — ЭТО ФОРМА -->
                                         <form method="post" style="display: inline;">
                                             {% csrf_token %}
                                             <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                                            <button type="submit" name="action" value="edit" class="btn btn-sm btn-outline-gold">Изменить</button>
-                                            <button type="submit" name="action" value="cancel" class="btn btn-sm btn-outline-danger" onclick="return confirm('Отменить бронирование?')">Отменить</button>
+                                            <input type="hidden" name="action" value="cancel">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Отменить бронирование?')">Отменить</button>
                                         </form>
                                     {% else %}
                                         <span class="text-muted">Нет действий</span>

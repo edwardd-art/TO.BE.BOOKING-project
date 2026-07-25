@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Вы вышли — TO.BE.BAR{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="card-dark">
+                <i class="bi bi-box-arrow-right" style="font-size: 64px; color: #d4a843;"></i>
+                <h2 class="gold-title mt-3">Вы вышли из системы</h2>
+                <div class="gold-line"></div>
+                <p class="text-muted">Спасибо, что были с нами!</p>
+                <p class="text-muted">Вы успешно вышли из личного кабинета.</p>
+                <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{% url 'login' %}" class="btn btn-gold">
+                        <i class="bi bi-box-arrow-in-right"></i> Войти снова
+                    </a>
+                    <a href="/" class="btn btn-outline-gold">
+                        <i class="bi bi-house"></i> На главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
