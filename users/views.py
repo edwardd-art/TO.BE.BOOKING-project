@@ -47,16 +47,22 @@ def profile(request):
 
         try:
             booking = Booking.objects.get(id=booking_id, user=request.user)
+
             if action == 'cancel':
                 booking.status = 'cancelled'
                 booking.save()
                 messages.success(request, f'Бронирование #{booking.id} отменено')
+                return redirect('users:profile')  # ← ЯВНЫЙ РЕДИРЕКТ
+
             elif action == 'edit':
-                return redirect('edit_booking', booking_id=booking.id)
+                return redirect('users:edit_booking', booking_id=booking.id)
+
         except Booking.DoesNotExist:
             messages.error(request, 'Бронирование не найдено')
+            return redirect('users:profile')
 
-        return redirect('profile')
+        # Если ничего не сработало — редирект
+        return redirect('users:profile')
 
     return render(request, 'users/profile.html', {'bookings': bookings})
 
@@ -68,7 +74,7 @@ def edit_booking(request, booking_id):
 
         if booking.status in ['completed', 'cancelled']:
             messages.error(request, 'Это бронирование нельзя изменить')
-            return redirect('profile')
+            return redirect('users:profile')
 
         if request.method == 'POST':
             date = request.POST.get('date')
@@ -94,10 +100,10 @@ def edit_booking(request, booking_id):
             booking.save()
 
             messages.success(request, f'Бронирование #{booking.id} обновлено')
-            return redirect('profile')
+            return redirect('users:profile')
 
         return render(request, 'users/edit_booking.html', {'booking': booking})
 
     except Booking.DoesNotExist:
         messages.error(request, 'Бронирование не найдено')
-        return redirect('profile')
+        return redirect('users:profile')
